@@ -1,11 +1,13 @@
-# The Distributed Cognitive Stack (DCS): A Manifesto for AI-Native Infrastructure
+# The Distributed Cognitive Stack (DCS): A Reference Model for AI-Native Infrastructure
 
 > **Status:** Draft / Open Request for Comments (RFC)  
-> **Version:** 0.1.0  
+> **Version:** 0.2.0  
 > **Maintainers:** Open for community contributions
 
 ## Abstract
-The traditional 7-layer OSI model and its modern TCP/IP descendants were engineered for deterministic, syntactic data transport between hosts. While containerized microservice architectures successfully distributed compute, the rapid rise of Large Language Models (LLMs) and autonomous multi-agent systems has exposed a critical architectural gap. Modern workloads no longer communicate solely via deterministic request-response cycles; they negotiate intent, share fluid context windows, and dynamically invoke tools. This manifesto introduces the **Distributed Cognitive Stack (DCS)**—an architectural evolution that extends beyond traditional Layer 7 to formally decouple deterministic microservice transport from agentic coordination, tool interconnect, and semantic governance.
+The traditional 7-layer OSI model and its modern TCP/IP descendants were engineered for deterministic, syntactic data transport between hosts. While containerized microservice architectures successfully distributed compute, the rapid rise of Large Language Models (LLMs) and autonomous multi-agent systems has exposed a critical architectural gap. Modern workloads no longer communicate solely via deterministic request-response cycles; they negotiate intent, share fluid context windows, and dynamically invoke tools. 
+
+This manifesto introduces the **Distributed Cognitive Stack (DCS)**—an architectural evolution that extends beyond traditional Layer 7 to formally decouple deterministic microservice transport from agentic coordination, tool interconnect, and semantic governance. Furthermore, DCS establishes an orthogonal **SecOps & Observability Plane** to map trust boundaries, native threat models, telemetry requirements, and defensive controls across every layer of the cognitive stack.
 
 ---
 
@@ -16,9 +18,8 @@ Today, that assumption is breaking down. We are entering an era where software i
 
 ---
 
-## 2. The Architectural Blueprint: The Distributed Cognitive Stack
-
-To evolve the model for cloud-native architectures driven by LLMs and multi-agent systems, we propose expanding the upper stack into distinct functional domains:
+## 2. The Architectural Blueprint: The Two-Dimensional Framework
+To properly model and defend AI-native systems, DCS utilizes a two-dimensional framework: **The Structural Stack** (vertical layers defining how workloads communicate and reason) intersected by the **SecOps Plane** (horizontal security and telemetry controls).
 
 | Layer | Domain | Primary Protocols & Primitives | Core Function |
 | :--- | :--- | :--- | :--- |
@@ -29,23 +30,32 @@ To evolve the model for cloud-native architectures driven by LLMs and multi-agen
 
 ---
 
-## 3. Technical Specifications
+## 3. Technical Specifications & SecOps Matrix
 
 ### Layer 7.5: Context & Tool Interconnect Layer (The Toolplane)
-* **Dynamic Discovery & Capability Advertising:** Microservices and external tools publish signed **Capability Manifests** (JSON-LD or Protocol Buffers) outlining input schemas, execution constraints, and token consumption profiles, eliminating hardcoded API client libraries.
-* **Context Sandboxing & Hygiene:** Automatically strips noise and validates schema outputs before context is reinjected into LLM windows, enforcing token-budget headers to prevent runaway recursive tool execution.
+* **Structural Primitives:** Dynamic tool-loading via MCP, bidirectional streaming, and schema-validated context injection.
+* **Trust Boundaries:** Intermediates communication between autonomous execution loops and external microservice APIs or tool environments.
+* **Threat Model (MITRE ATLAS / OWASP LLM):** Tool poisoning, indirect prompt injection via external tool outputs.
+* **Required Telemetry:** Schema validation failure logs, raw vs. sanitized tool response payloads, and token-consumption metrics.
+* **Controls:** Automated context-hygiene filters, token-budget enforcement headers, and response schema enforcement.
 
 ### Layer 8: Agentic Coordination Layer (The Synapse)
-* **Signed Agent Identity & Trust Cards:** Every agent instance initializes with a cryptographically verifiable **Agent Card** containing its system prompt hash, behavioral boundary constraints, and delegation depth limit, allowing peer validation before sharing intermediate reasoning steps.
-* **State and Session Continuum:** Decouples working memory from container storage via distributed, secure vector/state stores, managing checkpoints for long-running workflows spanning transient container restarts.
+* **Structural Primitives:** A2A protocol bindings, distributed state machines, and session checkpointing.
+* **Trust Boundaries:** Cross-agent peer communication and delegation boundaries across transient container lifecycles.
+* **Threat Model (MITRE ATLAS / OWASP Agentic):** Agent impersonation, delegation-depth recursion bombs, and memory/state-store poisoning.
+* **Required Telemetry:** Agent-to-agent transaction traces, delegation depth counters, and state-synchronization logs.
+* **Controls:** Signed **Agent Cards** (adding system-prompt hash attestation and explicit delegation depth limits on top of base A2A standards) and secure vector store isolation.
 
 ### Layer 9: Intent & Semantic Layer (The Teleology)
-* **Model-Aware & Cost-Optimized Routing:** Intercepts incoming cognitive requests, evaluates semantic complexity and latency constraints, and dynamically routes sub-tasks to optimal foundation models via a unified semantic gateway.
-* **Semantic Security & Guardrails:** Operates inline semantic firewalls that detect prompt injection, data exfiltration, and hallucination drift *before* execution graphs are compiled and dispatched to Layer 8.
+* **Structural Primitives:** Intent translation graphs, model-aware routing tables, and semantic gateway proxies.
+* **Trust Boundaries:** The ingestion perimeter between high-level user intent and automated planning/compilation engines.
+* **Threat Model (MITRE ATLAS / OWASP Top 10):** Goal hijacking and model-routing downgrade attacks (coercing traffic to weaker models to bypass safety guardrails).
+* **Required Telemetry:** Semantic drift indicators, prompt complexity scores, routing decision logs, and guardrail trigger rates.
+* **Controls:** Inline semantic firewalls, pre-execution constraint validation, and model-tier enforcement policies.
 
 ---
 
 ## 4. Contributing & Feedback
 We invite platform engineers, network architects, and AI researchers to stress-test these definitions. 
-* To propose changes to a specific layer, open an **Issue** or submit a **Pull Request**.
+* To propose changes to a specific layer or expand the SecOps matrix, open an **Issue** or submit a **Pull Request**.
 * Please review `CONTRIBUTING.md` for guidelines on proposing protocol updates.
